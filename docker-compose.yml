@@ -1,13 +1,14 @@
 services:
   mysql-backup:
-    image: latzzo/mysql-dump-scp:2.0
+    image: latzzo/mysql-backup-runner:test
     env_file:
       - .env.db
+    environment:
+      - SSH_PRIVATE_KEY_NAME=id_isac
     networks:
       - betty_network
     volumes:
-      - ~/.ssh/id_ed25519:/root/.ssh/id_ed25519:ro
-      - ~/.ssh/known_hosts:/root/.ssh/known_hosts:ro
+      - ~/.ssh:/root/.ssh/:ro
       - ./logs:/var/log
       - ./backups:/backup
     restart: "no"
