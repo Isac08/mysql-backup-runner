@@ -1,0 +1,6 @@
+.idea/
+backups
+logs
+
+Dockerfile
+docker-compose.yml
