@@ -1,0 +1,17 @@
+services:
+  mysql-backup:
+    image: latzzo/mysql-dump-scp:2.0
+    env_file:
+      - .env.db
+    networks:
+      - betty_network
+    volumes:
+      - ~/.ssh/id_ed25519:/root/.ssh/id_ed25519:ro
+      - ~/.ssh/known_hosts:/root/.ssh/known_hosts:ro
+      - ./logs:/var/log
+      - ./backups:/backup
+    restart: "no"
+
+networks:
+  betty_network:
+    external: true
