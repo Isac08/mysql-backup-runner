@@ -12,6 +12,4 @@ RUN apt-get update && apt-get install -y \
 COPY dump_and_transfer.sh /usr/local/bin/dump_and_transfer.sh
 RUN chmod +x /usr/local/bin/dump_and_transfer.sh
 
-RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
-
 ENTRYPOINT ["dump_and_transfer.sh"]

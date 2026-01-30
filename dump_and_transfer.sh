@@ -5,7 +5,7 @@ trap 'send_discord_alert "Error at line $LINENO: $BASH_COMMAND"' ERR
 # Check required variables
 : "${DB_HOST:?DB_HOST is required}"
 : "${DB_USER:?DB_USER is required}"
-: "${DB_PASS:?DB_PASS is required}"
+: "${DB_PASSWORD:?DB_PASSWORD is required}"
 : "${DB_NAME:?DB_NAME is required}"
 : "${SCP_TARGET:?SCP_TARGET is required}"
 : "${DISCORD_WEBHOOK_URL:?WEBHOOK_URL is required}"
@@ -62,7 +62,7 @@ ssh-keyscan -H "$TARGET_HOST" >> /tmp/.ssh/known_hosts 2>/dev/null || true
 mkdir -p "$(dirname "$LOG_FILE")"
 
 log "📦 Dumping database $DB_NAME from $DB_HOST"
-export MYSQL_PWD="$DB_PASS"
+export MYSQL_PWD="$DB_PASSWORD"
 mysqldump -h "$DB_HOST" -u "$DB_USER" "$DB_NAME" | gzip > "$BACKUP_FILE"
 unset MYSQL_PWD
 

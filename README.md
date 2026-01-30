@@ -39,14 +39,14 @@ docker pull latzzo/mysql-backup-runner:latest
 The container is fully configured using environment variables.
 
 | Variable              | Description                              |
-| --------------------- | ---------------------------------------- |
+|-----------------------|------------------------------------------|
 | `DB_HOST`             | MySQL host                               |
 | `DB_USER`             | MySQL username                           |
-| `DB_PASS`             | MySQL password                           |
+| `DB_PASSWORD`         | MySQL user's password                    |
 | `DB_NAME`             | Database name to back up                 |
 | `SCP_TARGET`          | SCP destination (e.g. `user@host:/path`) |
 | `DISCORD_WEBHOOK_URL` | Discord webhook URL for failure alerts   |
-
+| `SSH_PRIVATE_KEY_NAME`          | SSH private key filename inside `/root/.ssh` (default: `id_ed25519`) |
 ---
 
 ## ▶️ Run with Docker
@@ -57,10 +57,11 @@ Example using `docker run`:
 docker run --rm \
   -e DB_HOST=127.0.0.1 \
   -e DB_USER=backup_user \
-  -e DB_PASS=secret \
+  -e DB_PASSWORD=secret \
   -e DB_NAME=production_db \
   -e SCP_TARGET=backup@server.com:/db-backup \
   -e DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/xxx/yyy \
+  -e SSH_PRIVATE_KEY_NAME=my_ssh_key \
   latzzo/mysql-backup-runner:latest
 ```
 
@@ -88,10 +89,11 @@ services:
     environment:
       DB_HOST: 127.0.0.1
       DB_USER: backup_user
-      DB_PASS: secret
+      DB_PASSWORD: secret
       DB_NAME: production_db
       SCP_TARGET: backup@1.2.3.4:/data/mysql
       DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/xxx/yyy
+      SSH_PRIVATE_KEY_NAME: my_ssh_key
     volumes:
       # Backup output
       - ./backups:/backup
@@ -99,11 +101,8 @@ services:
       # Backup logs
       - ./logs:/var/log
       
-      # SSH private key (read-only)
-      - ~/.ssh/id_rsa:/root/.ssh/id_rsa:ro
-
-      # SSH known_hosts (read-only)
-      - ~/.ssh/known_hosts:/root/.ssh/known_hosts:ro
+      # All ssh keys (read-only)
+      - ~/.ssh:/root/.ssh/:ro
     restart: "no"
 
 networks:
@@ -119,7 +118,7 @@ networks:
 * File name format:
 
 ```
-backup-<DB_NAME>-YYYYMMDD-HHMMSS.sql.gz
+backup-<DB_NAME>-YYYYMMDD_HHMMSS.sql.gz
 ```
 
 ---
