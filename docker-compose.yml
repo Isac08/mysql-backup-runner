@@ -1,16 +1,10 @@
 services:
   mysql-backup:
     image: latzzo/mysql-backup-runner:latest
-    environment:
-      - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - SCP_TARGET=${SCP_TARGET}
-      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
-      - SSH_PRIVATE_KEY_NAME=${SSH_PRIVATE_KEY_NAME}
+    env_file:
+      - .env
     networks:
-      - betty_network
+      - network_default
     volumes:
       - ~/.ssh:/root/.ssh/:ro
       - ./logs:/var/log
@@ -18,5 +12,5 @@ services:
     restart: "no"
 
 networks:
-  betty_network:
+  network_default:
     external: true
