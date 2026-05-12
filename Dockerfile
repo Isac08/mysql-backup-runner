@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim AS base
 
 RUN apt-get update && apt-get install -y \
     default-mysql-client \
@@ -9,7 +9,18 @@ RUN apt-get update && apt-get install -y \
     jq \
     && rm -rf /var/lib/apt/lists/*
 
-COPY dump_and_transfer.sh /usr/local/bin/dump_and_transfer.sh
-RUN chmod +x /usr/local/bin/dump_and_transfer.sh
+FROM base AS minio
+RUN curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc \
+    -o /usr/local/bin/mc &&  \
+    chmod +x /usr/local/bin/mc &&  \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENTRYPOINT ["dump_and_transfer.sh"]
+COPY script/dump_minio.sh /usr/local/bin/dump_minio.sh
+RUN chmod +x /usr/local/bin/dump_minio.sh
+ENTRYPOINT ["dump_minio.sh"]
+
+FROM base AS scp
+COPY script/dump_scp.sh /usr/local/bin/dump_scp.sh
+RUN chmod +x /usr/local/bin/dump_scp.sh
+
+ENTRYPOINT ["dump_scp.sh"]
